@@ -2,7 +2,7 @@
 
 Features:
 
-- Zero dependency super minimal ISO8601 date parsing library. Alternatives were [too lax, inaccurate, huge on disk, or hundle in bundle](https://fediverse.zachleat.com/@zachleat/114870836413532617).
+- Zero dependency super minimal ISO8601 date parsing library. Alternatives were [too lax, inaccurate, huge on disk, or huge in bundle](https://fediverse.zachleat.com/@zachleat/114870836413532617).
 - Dates with 8 digits do not require `-` delimiters (all other dates require delimiters, e.g. `YYYY-MM`)
 - Times with 6 digits do not require `:` delimiters (all others times require delimiters, e.g. `HH:II`)
 - Requires the `T` delimiter for date and time

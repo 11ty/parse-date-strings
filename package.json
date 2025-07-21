@@ -1,6 +1,6 @@
 {
   "name": "@11ty/parse-date-strings",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Parsing content date strings in Eleventy core.",
   "type": "module",
   "main": "parse.js",

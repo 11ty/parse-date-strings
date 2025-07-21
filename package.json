@@ -1,25 +1,28 @@
 {
-  "name": "@11ty/parse-date-strings",
-  "version": "1.0.0",
-  "description": "Parsing content date strings in Eleventy core.",
-  "type": "module",
-  "main": "parse.js",
-  "scripts": {
-    "test": "vitest"
-  },
-  "engines": {
+	"name": "@11ty/parse-date-strings",
+	"version": "1.0.0",
+	"description": "Parsing content date strings in Eleventy core.",
+	"type": "module",
+	"main": "parse.js",
+	"scripts": {
+		"test": "vitest"
+	},
+	"engines": {
 		"node": ">=20"
 	},
-  "funding": {
+	"funding": {
 		"type": "opencollective",
 		"url": "https://opencollective.com/11ty"
 	},
-  "license": "MIT",
-  "devDependencies": {
-    "luxon": "^3.7.1",
-    "vitest": "^3.2.4"
-  },
-  "author": "Zach Leatherman <zachleatherman@gmail.com> (https://zachleat.com/)",
+	"publishConfig": {
+		"access": "public"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"luxon": "^3.7.1",
+		"vitest": "^3.2.4"
+	},
+	"author": "Zach Leatherman <zachleatherman@gmail.com> (https://zachleat.com/)",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/11ty/parse-date-strings.git"

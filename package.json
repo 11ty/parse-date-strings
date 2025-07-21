@@ -8,7 +8,7 @@
     "test": "vitest"
   },
   "engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
   "funding": {
 		"type": "opencollective",

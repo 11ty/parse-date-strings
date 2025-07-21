@@ -1,0 +1,126 @@
+// Times are parsed as UTC if no offset is specified
+
+class IsoDateParts {
+	static DEFAULT_TIMEZONE_OFFSET = {
+		hours: 0,
+		minutes: 0,
+	};
+
+	static VAGUE_DATE_REGEX = /^\d{5,7}$/;
+	static PARTIAL_DATE_REGEX = /^(\d{4})(?:-([01]\d)(?:-([0-3]\d))?)?$/;
+	static FULL_DATE_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)$/; // dashes optional when 8 digits
+	
+	static VAGUE_DATETIME_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)T(\d{1}|\d{3}|\d{5})(?:[\.\,](\d+))?([+-]\d{2}:?\d{2}|Z)?$/;
+	static DATETIME_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)T([0-2]\d)(?::?([0-5]\d))?(?::?([0-5]\d))?(?:[\.\,](\d+))?(Z|[+-][0-2]\d(?::?[0-5]\d)?)?$/;
+
+	// this format is cursed, burn it with fire https://en.wikipedia.org/wiki/ISO_week_date
+	static DATE_WEEK_REGEX = /^(\d{4})-W\d{2}-?\d{0,1}/; // unsupported
+	static YEARDAY_REGEX = /^(\d{4})-?\d{3}$/; // unsupported
+	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/; // unsupported
+
+	static getTimezoneOffset(offset = "") {
+		if(offset === "Z") {
+			return this.DEFAULT_TIMEZONE_OFFSET;
+		}
+		let match = offset.match(this.TIMEZONE_REGEX);
+		if(!match) {
+			return this.DEFAULT_TIMEZONE_OFFSET;
+		}
+
+		let [hours, minutes] = [match[1], match[2]];
+		return {
+			hours: parseInt(hours, 10) || 0,
+			minutes: parseInt(minutes, 10) || 0
+		};
+	}
+
+	static getByDateTime(match) {
+		let offset = this.getTimezoneOffset(match[8]);
+
+		return {
+			year: parseInt(match[1], 10),
+			month: match[2] ? parseInt(match[2], 10) - 1 : 0,
+			day: match[3] ? parseInt(match[3], 10) : 1, // 1-indexed default
+			hours: (match[4] ? parseInt(match[4], 10) : 0) - offset.hours,
+			minutes: (match[5] ? parseInt(match[5], 10) : 0) - offset.minutes,
+			seconds: match[6] ? parseInt(match[6], 10) : 0,
+			// may include extra precision but we only count the first 3 digits for milliseconds
+			milliseconds: match[7] ? parseInt(match[7].slice(0, 3), 10) : 0,
+		};
+	}
+
+	static getParts(str) {
+		if(str.match(this.DATE_WEEK_REGEX) || str.match(this.YEARDAY_REGEX)) {
+			throw new Error(`Unsupported date format (dropped syntax): ${str}`);
+		}
+
+		if(str.match(this.VAGUE_DATE_REGEX)) {
+			throw new Error(`Unsupported date format (vague date): ${str}`);
+		}
+
+		let dateMatch = str.match(this.PARTIAL_DATE_REGEX) || str.match(this.FULL_DATE_REGEX);
+		if(dateMatch) {
+			return this.getByDateTime(dateMatch);
+		}
+
+		let vagueDatetime = str.match(this.VAGUE_DATETIME_REGEX);
+		if(vagueDatetime) {
+			throw new Error(`Unsupported date format (vague datetime): ${str}`);
+		}
+
+		let dateTimeMatch = str.match(this.DATETIME_REGEX);
+		if(dateTimeMatch) {
+			return this.getByDateTime(dateTimeMatch);
+		}
+
+		throw new Error(`Unsupported date format (unknown): ${str}`);
+	}
+}
+
+class IsoDate {
+	#source;
+
+	static parse(str) {
+		let parts = IsoDateParts.getParts(str);
+		if(parts) {
+			let iso = new IsoDate(parts);
+			iso.source = str;
+			iso.checkParts();
+
+			return new Date(Date.UTC(...iso.getArgs()));
+		}
+
+		throw new Error(`Unsupported date format: ${str}`);
+	}
+
+	constructor(parts) {
+		// parts.day, parts.year, parts.month, parts.week
+		Object.assign(this, parts);
+	}
+
+	getArgs() {
+		return [this.year, this.month, this.day, this.hours, this.minutes, this.seconds, this.milliseconds];
+	}
+
+	set source(val) {
+		this.#source = val;
+	}
+
+	get source() {
+		return this.#source;
+	}
+
+	checkParts() {
+		// months: 0-indexed, 0–11 are valid
+		if(this.month < 0 || this.month > 11) {
+			throw new Error(`Unsupported date format (invalid month): ${this.source}`);
+		}
+
+		// check if days are too big
+		if(this.day < 1 || new Date(Date.UTC(this.year, this.month, 1)).getUTCMonth() !== new Date(Date.UTC(this.year, this.month, this.day)).getUTCMonth()) {
+			throw new Error(`Unsupported date format (invalid days for month): ${this.source}`);
+		}
+	}
+}
+
+export { IsoDate };

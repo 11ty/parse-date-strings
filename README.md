@@ -1,30 +1,53 @@
-# Eleventy’s ISO8601 Date parser
+# Eleventy ISO8601 Date Parser
 
 Features:
 
 - Zero dependency super minimal ISO8601 date parsing library. Alternatives were [too lax, inaccurate, huge on disk, or huge in bundle](https://fediverse.zachleat.com/@zachleat/114870836413532617).
-- Dates with 8 digits do not require `-` delimiters (all other dates require delimiters, e.g. `YYYY-MM`)
-- Times with 6 digits do not require `:` delimiters (all others times require delimiters, e.g. `HH:II`)
-- Requires the `T` delimiter for date and time
-- Defaults to UTC when time zone is unknown instead of local time (`Z` can be explicit or implied)
+- All dates supported by this library are RFC-9557 compatible (parseable by `Temporal.Instant.from` or `Temporal.PlainDateTime.from`) to prepare for wider [Temporal API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal) support.
+  - Note that this is not a full polyfill — not all RFC-9557 dates are supported here. Alternatives: [`temporal-polyfill`](https://github.com/fullcalendar/temporal-polyfill) or [`js-temporal/temporal-polyfill`](https://github.com/js-temporal/temporal-polyfill)
+- Defaults to UTC when time zone is unknown instead of local time
   - This matches previous behavior in Eleventy and this feature maintains consistency between build and deploy servers.
 - Supports +00:00 or -00:00 style time zone offsets
 - Invalid strings throw errors.
+- Delimiter notes:
+  - Requires the `T` delimiter for Date and Time
+  - Dates with 8 digits do not require `-` delimiters (all other dates require delimiters, e.g. `YYYY-MM`)
+  - Times with 6 digits do not require `:` delimiters (all others times require delimiters, e.g. `HH:II`)
 
-Not supported:
+Not supported (for RFC 9557 compatibility):
 
-- Standalone times are not supported (must be date or datetime)
-- [ISO week date syntax](https://en.wikipedia.org/wiki/ISO_week_date) (e.g. `YYYY-W01-1`)
-- Day of year syntax is not supported (e.g. `YYYY-001`, `YYYY-365`)
-- Fractional syntax for hours or minutes (e.g. `T14.6` or `T10:30.6`). Fractional seconds (e.g. milliseconds) are supported (of course).
+- Standalone time formats are *not* supported (must be Date or DateTime)
+- [ISO week date syntax](https://en.wikipedia.org/wiki/ISO_week_date) is *not* supported (e.g. `YYYY-W01-1`)
+- Day of year syntax is *not* supported (e.g. `YYYY-001`, `YYYY-365`)
+- Fractional syntax for hours or minutes (e.g. `T14.6` or `T10:30.6`) is *not* supported. Fractional seconds (e.g. milliseconds) are supported (of course).
 
-## `luxon` Comparison
+## Usage
+
+```
+npm install @11ty/parse-date-strings
+```
+
+```js
+import { parse } from "@11ty/parse-date-strings
+
+// returns JavaScript Date object
+parse("2000-01-01") instanceof Date
+> true
+
+// Convert to UTC String
+parse("2000-01-01").toUTCString()
+> "Mon, 01 Jan 2001 00:00:00 GMT"
+```
+
+## Comparisons
+
+### `luxon`
 
 More strict parsing compared with [Luxon’s `fromISO`](https://moment.github.io/luxon/#/parsing?id=iso-8601) (used in Eleventy v0.x through v3):
 
 ```
-2016
-2016-05
+2016                      # Dropped
+2016-05                   # Dropped
 201605                    # Dropped, delimiter required if date is not 8 digits
 2016-05-25
 20160525

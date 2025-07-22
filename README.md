@@ -18,7 +18,7 @@ Not supported (for RFC 9557 compatibility):
 - Standalone time formats are *not* supported (must be Date or DateTime)
 - [ISO week date syntax](https://en.wikipedia.org/wiki/ISO_week_date) is *not* supported (e.g. `YYYY-W01-1`)
 - Day of year syntax is *not* supported (e.g. `YYYY-001`, `YYYY-365`)
-- Fractional syntax for hours or minutes (e.g. `T14.6` or `T10:30.6`) is *not* supported. Fractional seconds (e.g. milliseconds) are supported (of course).
+- Fractional hours or minutes (e.g. `T14.6` or `T10:30.6`) are *not* supported. Fractional seconds (e.g. milliseconds) are supported (of course).
 
 ## Usage
 

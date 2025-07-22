@@ -45,9 +45,6 @@ parse("2000-01-01").toUTCString()
 More strict parsing compared with [Luxon’s `fromISO`](https://moment.github.io/luxon/#/parsing?id=iso-8601) (used in Eleventy v0.x through v3):
 
 ```
-2016                      # Dropped
-2016-05                   # Dropped
-201605                    # Dropped, delimiter required if date is not 8 digits
 2016-05-25
 20160525
 2016-05-25T09
@@ -58,6 +55,11 @@ More strict parsing compared with [Luxon’s `fromISO`](https://moment.github.io
 2016-05-25T092415
 2016-05-25T092415.123
 2016-05-25T09:24:15,123
+
+# No YYYY or YYYYMM syntax
+2016                      # Dropped
+2016-05                   # Dropped
+201605                    # Dropped
 
 # No ISO week date syntax
 2016-W21-3                # Dropped

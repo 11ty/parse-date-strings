@@ -69,6 +69,12 @@ export const VALID_TEST_CASES = `
 
 // Inspired by supplied test cases
 2025-07-22T05:11:40+0845
+
+// Issue #1
+2016-05-25T09:24:15+06
+2016-05-25T09:24:15+0600
+2016-05-25T09:24:15-06
+2016-05-25T09:24:15-0600
 `
 
 // Expected to fail

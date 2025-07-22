@@ -10,9 +10,8 @@ Features:
 - Supports +00:00 or -00:00 style time zone offsets
 - Invalid strings throw errors.
 - Delimiter notes:
-  - Requires the `T` delimiter for Date and Time
-  - Dates with 8 digits do not require `-` delimiters (all other dates require delimiters, e.g. `YYYY-MM`)
-  - Times with 6 digits do not require `:` delimiters (all others times require delimiters, e.g. `HH:II`)
+  - *Requires* the `T` delimiter with DateTime strings
+  - Delimiters in dates (`-`) and times (`:`) are optional
 
 Not supported (for RFC 9557 compatibility):
 

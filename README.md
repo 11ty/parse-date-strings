@@ -29,13 +29,13 @@ npm install @11ty/parse-date-strings
 ```js
 import { parse } from "@11ty/parse-date-strings
 
-// returns JavaScript Date object
-parse("2000-01-01") instanceof Date
-> true
+// `parse` returns JavaScript Date
 
-// Convert to UTC String
+parse("2000-01-01") instanceof Date
+// true
+
 parse("2000-01-01").toUTCString()
-> "Mon, 01 Jan 2001 00:00:00 GMT"
+// "Mon, 01 Jan 2001 00:00:00 GMT"
 ```
 
 ## Comparisons

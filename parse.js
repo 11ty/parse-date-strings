@@ -1,22 +1,18 @@
 // Times are parsed as UTC if no offset is specified
-
-class IsoDateParts {
+export class IsoDateParts {
 	static DEFAULT_TIMEZONE_OFFSET = {
 		hours: 0,
 		minutes: 0,
 	};
 
-	static VAGUE_DATE_REGEX = /^\d{5,7}$/;
-	static PARTIAL_DATE_REGEX = /^(\d{4})(?:-([01]\d)(?:-([0-3]\d))?)?$/;
-	static FULL_DATE_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)$/; // dashes optional when 8 digits
-	
-	static VAGUE_DATETIME_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)T(\d{1}|\d{3}|\d{5})(?:[\.\,](\d+))?([+-]\d{2}:?\d{2}|Z)?$/;
-	static DATETIME_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)T([0-2]\d)(?::?([0-5]\d))?(?::?([0-5]\d))?(?:[\.\,](\d+))?(Z|[+-][0-2]\d(?::?[0-5]\d)?)?$/;
+	static FULL_DATE_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)$/;
+	static DATETIME_REGEX = /^(\d{4})-?([01]\d)-?([0-3]\d)T([0-2]\d(?:[\.\,]\d+)?)(?::?([0-5]\d(?:[\.\,]\d+)?)(?::?([0-5]\d))?(?:[\.\,](\d+))?)?(Z|[+-][0-2]\d(?::?[0-5]\d)?)?$/;
+	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/;
+	static IS_FRACTIONAL_REGEX = /^\d+[\.\,]\d+$/;
 
-	// this format is cursed, burn it with fire https://en.wikipedia.org/wiki/ISO_week_date
-	static DATE_WEEK_REGEX = /^(\d{4})-W\d{2}-?\d{0,1}/; // unsupported
-	static YEARDAY_REGEX = /^(\d{4})-?\d{3}$/; // unsupported
-	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/; // unsupported
+	// Unsupported formats https://en.wikipedia.org/wiki/ISO_week_date
+	static DATE_WEEK_REGEX = /^(\d{4})-W\d{2}-?\d{0,1}/;
+	static YEARDAY_REGEX = /^(\d{4})-?\d{3}$/;
 
 	static getTimezoneOffset(offset = "") {
 		if(offset === "Z") {
@@ -51,35 +47,28 @@ class IsoDateParts {
 
 	static getParts(str) {
 		if(str.match(this.DATE_WEEK_REGEX) || str.match(this.YEARDAY_REGEX)) {
-			throw new Error(`Unsupported date format (dropped syntax): ${str}`);
+			throw new Error(`Unsupported date format (unsupported syntax): ${str}`);
 		}
 
-		if(str.match(this.VAGUE_DATE_REGEX)) {
-			throw new Error(`Unsupported date format (vague date): ${str}`);
-		}
-
-		let dateMatch = str.match(this.PARTIAL_DATE_REGEX) || str.match(this.FULL_DATE_REGEX);
+		let dateMatch = str.match(this.FULL_DATE_REGEX);
 		if(dateMatch) {
 			return this.getByDateTime(dateMatch);
 		}
 
-		let vagueDatetime = str.match(this.VAGUE_DATETIME_REGEX);
-		if(vagueDatetime) {
-			throw new Error(`Unsupported date format (vague datetime): ${str}`);
-		}
-
 		let dateTimeMatch = str.match(this.DATETIME_REGEX);
 		if(dateTimeMatch) {
+			if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
+				throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
+			}
+
 			return this.getByDateTime(dateTimeMatch);
 		}
 
-		throw new Error(`Unsupported date format (unknown): ${str}`);
+		throw new Error(`Unsupported date format: ${str}`);
 	}
 }
 
-class IsoDate {
-	#source;
-
+export class IsoDate {
 	static parse(str) {
 		let parts = IsoDateParts.getParts(str);
 		if(parts) {
@@ -102,14 +91,6 @@ class IsoDate {
 		return [this.year, this.month, this.day, this.hours, this.minutes, this.seconds, this.milliseconds];
 	}
 
-	set source(val) {
-		this.#source = val;
-	}
-
-	get source() {
-		return this.#source;
-	}
-
 	checkParts() {
 		// months: 0-indexed, 0–11 are valid
 		if(this.month < 0 || this.month > 11) {
@@ -123,4 +104,6 @@ class IsoDate {
 	}
 }
 
-export { IsoDate };
+export function parse(str) {
+	return IsoDate.parse(str);
+}

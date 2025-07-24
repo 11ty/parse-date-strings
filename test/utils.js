@@ -81,6 +81,14 @@ export const VALID_TEST_CASES = `
 -002000-01-01
 +0020000101
 -0020000101
+
+// case insensitive delimiter (RFC 9557-valid)
+2016-05-25t12:00:00
+`;
+
+export const VALID_BUT_INVALID_IN_LUXON_TEST_CASES = `
+// space  delimiter (RFC 9557-valid)
+2016-05-25 12:00:00
 `
 
 // Expected to fail
@@ -96,12 +104,8 @@ export const INVALID_TEST_CASES = `
 // Support removed (missing delimiters)
 201605
 202618
+2016-05-2501
 2016-05-25T01:
-
-// Bad date/time delimiter
-// These are supported by RFC 9337
-2016-05-25 12:00:00
-2016-05-25t12:00:00
 
 // Bad syntax, number of time digits
 2016-05-25T1:11

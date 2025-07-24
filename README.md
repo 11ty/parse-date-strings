@@ -1,16 +1,15 @@
-# Eleventy ISO8601 Date Parser
+# `@11ty/parse-date-strings`
 
 Features:
 
-- Zero dependency super minimal ISO8601 date parsing library. Alternatives were [too lax, inaccurate, huge on disk, or huge in bundle](https://fediverse.zachleat.com/@zachleat/114870836413532617).
-- All dates supported by this library are [RFC-9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format) compatible (parseable by `Temporal.PlainDate.from`, `Temporal.Instant.from`, or `Temporal.PlainDateTime.from`) to prepare for wider [Temporal API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal) support.
-  - Note that this is not a full polyfill — not all RFC-9557 dates are supported here. Alternatives: [`temporal-polyfill`](https://github.com/fullcalendar/temporal-polyfill) or [`js-temporal/temporal-polyfill`](https://github.com/js-temporal/temporal-polyfill)
+- Zero dependency super minimal [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible date parsing library. Date strings are also parseable by `Temporal.PlainDate.from`, `Temporal.Instant.from`, or `Temporal.PlainDateTime.from` to prepare for wider [Temporal API](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal) support.
+  - Alternatives: [`temporal-polyfill`](https://github.com/fullcalendar/temporal-polyfill) or [`js-temporal/temporal-polyfill`](https://github.com/js-temporal/temporal-polyfill)
 - Invalid strings throw errors.
 - Time zone notes:
   - Defaults to UTC when time zone is unknown (*not* local time). This matches previous behavior in Eleventy and this feature maintains consistency between build and deploy servers.
   - Supports `+00`, `+00:00`, `-00`, or `-00:00` style time zone offsets (`:` delimiter is optional)
 - Delimiter notes:
-  - *Requires* the `T` delimiter with DateTime strings
+  - *Requires* a `T` or `t` or ` ` (space) delimiter with DateTime strings
   - Delimiters in dates (`-`) and times (`:`) are optional
 
 Not supported (for RFC 9557 compatibility):

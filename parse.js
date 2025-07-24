@@ -10,10 +10,6 @@ export class IsoDateParts {
 	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/;
 	static IS_FRACTIONAL_REGEX = /^\d+[\.\,]\d+$/;
 
-	// Unsupported formats https://en.wikipedia.org/wiki/ISO_week_date
-	static DATE_WEEK_REGEX = /^(\d{4})-W\d{2}-?\d{0,1}/;
-	static YEARDAY_REGEX = /^(\d{4})-?\d{3}$/;
-
 	static getTimezoneOffset(offset = "") {
 		if(offset === "Z") {
 			return this.DEFAULT_TIMEZONE_OFFSET;
@@ -46,10 +42,6 @@ export class IsoDateParts {
 	}
 
 	static getParts(str) {
-		if(str.match(this.DATE_WEEK_REGEX) || str.match(this.YEARDAY_REGEX)) {
-			throw new Error(`Unsupported date format (unsupported syntax): ${str}`);
-		}
-
 		let dateMatch = str.match(this.FULL_DATE_REGEX);
 		if(dateMatch) {
 			return this.getByDateTime(dateMatch);

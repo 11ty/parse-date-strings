@@ -141,6 +141,10 @@ export const INVALID_TEST_CASES = `
 09:24:15
 09:24:15.123
 09:24:15,123
+
+// Ten digit precision not supported (RFC 9557)
+20250721T152640.3965097519
+20250721T152640,3965097519
 `
 
 // Some Date/DateTime tests cribbed from https://ijmacd.github.io/rfc3339-iso8601/

@@ -42,7 +42,7 @@ export class IsoDateParts {
 		return {
 			year: parseInt(year, 10),
 			month: parseInt(month, 10) - 1,
-			day: parseInt(day, 10) ,
+			day: parseInt(day, 10),
 			hours: parseInt(hours, 10) - offset.hours,
 			minutes: parseInt(minutes, 10) - offset.minutes,
 			seconds: parseInt(seconds, 10),
@@ -53,9 +53,11 @@ export class IsoDateParts {
 
 	static getParts(str = "") {
 		let dateTimeMatch = str.match(this.FULL_DATE_REGEX) ?? str.match(this.DATETIME_REGEX);
-		if(!dateTimeMatch) throw new Error(`Unsupported date format: ${str}`);
+		if(!dateTimeMatch) {
+		  throw new Error(`Unsupported date format: ${str}`);
+		}
 		if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
-				throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
+			throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
 		}
 
 		return this.getByDateTime(...dateTimeMatch);

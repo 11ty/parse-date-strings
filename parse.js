@@ -8,9 +8,10 @@ export class IsoDateParts {
 	static getTimezoneOffset(offset = "Z") {
 		let [, hours = "0", minutes = "0"] = offset.match(this.TIMEZONE_REGEX) ?? [];
 
+    let sign = hours[0] === '-' ? -1 : 1;
 		return {
 			hours: parseInt(hours, 10),
-			minutes: parseInt(minutes, 10)
+			minutes: parseInt(minutes, 10) * sign
 		};
 	}
 

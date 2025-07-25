@@ -1,4 +1,6 @@
-// Times are parsed as UTC if no offset is specified
+/**
+ * _Times are parsed as UTC if no offset is specified_
+ */
 export class IsoDateParts {
 	static DEFAULT_TIMEZONE_OFFSET = {
 		hours: 0,
@@ -27,6 +29,7 @@ export class IsoDateParts {
 		};
 	}
 
+	/** @param {RegExpMatchArray} match */
 	static getByDateTime(match) {
 		let offset = this.getTimezoneOffset(match[8]);
 
@@ -42,6 +45,7 @@ export class IsoDateParts {
 		};
 	}
 
+	/** @param {string} str An [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible string */
 	static getParts(str) {
 		let dateMatch = str.match(this.FULL_DATE_REGEX);
 		if(dateMatch) {
@@ -62,6 +66,24 @@ export class IsoDateParts {
 }
 
 export class IsoDate {
+  /** @type {number} */
+  year;
+  /** @type {number} */
+  month;
+  /** @type {number} */
+  day;
+  /** @type {number} */
+  hours;
+  /** @type {number} */
+  minutes;
+  /** @type {number} */
+  seconds;
+  /** @type {number} */
+  milliseconds;
+  /** @type {string} */
+  source;
+
+  /** @param {string} str An [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible string */
 	static parse(str) {
 		let parts = IsoDateParts.getParts(str);
 		if(parts) {
@@ -75,11 +97,22 @@ export class IsoDate {
 		throw new Error(`Unsupported date format: ${str}`);
 	}
 
+	/**
+	 * @param {object} parts
+	 * @param {number} parts.year
+	 * @param {number} parts.month
+	 * @param {number} parts.day
+	 * @param {number} parts.hours
+	 * @param {number} parts.minutes
+	 * @param {number} parts.seconds
+	 * @param {number} parts.milliseconds
+	 */
 	constructor(parts) {
-		// parts.day, parts.year, parts.month, parts.week
+		// parts.day, parts.year, parts.month
 		Object.assign(this, parts);
 	}
 
+	/** @returns {[number, number, number, number, number, number, number]} */
 	getArgs() {
 		return [this.year, this.month, this.day, this.hours, this.minutes, this.seconds, this.milliseconds];
 	}
@@ -97,6 +130,7 @@ export class IsoDate {
 	}
 }
 
+/** @param {string} str An [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible string */
 export function parse(str) {
 	return IsoDate.parse(str);
 }

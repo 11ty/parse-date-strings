@@ -1,5 +1,5 @@
 name: Unit Tests
-on: push
+on: [push, pull_request]
 permissions: read-all
 jobs:
   vitest:

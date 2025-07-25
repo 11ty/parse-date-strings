@@ -20,9 +20,10 @@ export class IsoDateParts {
 		}
 
 		let [hours, minutes] = [match[1], match[2]];
+		let sign = hours[0] === '-' ? -1 : 1;
 		return {
 			hours: parseInt(hours, 10) || 0,
-			minutes: parseInt(minutes, 10) || 0
+			minutes: (parseInt(minutes, 10) || 0) * sign
 		};
 	}
 

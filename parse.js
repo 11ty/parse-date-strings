@@ -27,8 +27,8 @@ export class IsoDateParts {
 	}
 
 	static getByDateTime(
-	  _, // full match
-	  year = "",
+		_, // full match
+		year = "",
 		month = "0", // 0-indexed default
 		day = "1", // 1-indexed default
 		hours = "0",

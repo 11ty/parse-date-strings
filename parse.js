@@ -1,29 +1,17 @@
 // Times are parsed as UTC if no offset is specified
 export class IsoDateParts {
-	static DEFAULT_TIMEZONE_OFFSET = {
-		hours: 0,
-		minutes: 0,
-	};
-
 	static FULL_DATE_REGEX = /^([+-]\d{6}|\d{4})-?([01]\d)-?([0-3]\d)$/;
 	static DATETIME_REGEX = /^([+-]\d{6}|\d{4})-?([01]\d)-?([0-3]\d)[Tt ]([0-2]\d(?:[\.\,]\d+)?)(?::?([0-5]\d(?:[\.\,]\d+)?)(?::?([0-5]\d))?(?:[\.\,](\d{1,9}))?)?(Z|[+-][0-2]\d(?::?[0-5]\d)?)?$/;
 	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/;
 	static IS_FRACTIONAL_REGEX = /^\d+[\.\,]\d+$/;
 
-	static getTimezoneOffset(offset = "") {
-		if(offset === "Z") {
-			return this.DEFAULT_TIMEZONE_OFFSET;
-		}
-		let match = offset.match(this.TIMEZONE_REGEX);
-		if(!match) {
-			return this.DEFAULT_TIMEZONE_OFFSET;
-		}
+	static getTimezoneOffset(offset = "Z") {
+		let [, hours = "0", minutes = "0"] = offset.match(this.TIMEZONE_REGEX) ?? [];
 
-		let [hours, minutes] = [match[1], match[2]];
-		let sign = hours[0] === '-' ? -1 : 1;
+    let sign = hours[0] === '-' ? -1 : 1;
 		return {
-			hours: parseInt(hours, 10) || 0,
-			minutes: (parseInt(minutes, 10) || 0) * sign
+			hours: parseInt(hours, 10),
+			minutes: parseInt(minutes, 10) * sign
 		};
 	}
 

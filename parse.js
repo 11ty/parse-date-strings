@@ -45,7 +45,7 @@ export class IsoDateParts {
 		if(!dateTimeMatch) {
 		  throw new Error(`Unsupported date format: ${str}`);
 		}
-		if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
+		if(dateTimeMatch.slice(4,6).some(part => !!part?.match(this.IS_FRACTIONAL_REGEX))) {
 			throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
 		}
 

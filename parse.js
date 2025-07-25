@@ -26,37 +26,39 @@ export class IsoDateParts {
 		};
 	}
 
-	static getByDateTime(match) {
-		let offset = this.getTimezoneOffset(match[8]);
+	static getByDateTime(
+	  _, // full match
+	  year = "",
+		month = "0", // 0-indexed default
+		day = "1", // 1-indexed default
+		hours = "0",
+		minutes = "0",
+		seconds = "0",
+		milliseconds = "0",
+		timezone = "Z",
+	) {
+		let offset = this.getTimezoneOffset(timezone);
 
 		return {
-			year: parseInt(match[1], 10),
-			month: match[2] ? parseInt(match[2], 10) - 1 : 0,
-			day: match[3] ? parseInt(match[3], 10) : 1, // 1-indexed default
-			hours: (match[4] ? parseInt(match[4], 10) : 0) - offset.hours,
-			minutes: (match[5] ? parseInt(match[5], 10) : 0) - offset.minutes,
-			seconds: match[6] ? parseInt(match[6], 10) : 0,
+			year: parseInt(year, 10),
+			month: parseInt(month, 10) - 1,
+			day: parseInt(day, 10) ,
+			hours: parseInt(hours, 10) - offset.hours,
+			minutes: parseInt(minutes, 10) - offset.minutes,
+			seconds: parseInt(seconds, 10),
 			// may include extra precision but we only count the first 3 digits for milliseconds
-			milliseconds: match[7] ? parseInt(match[7].slice(0, 3), 10) : 0,
+			milliseconds: parseInt(milliseconds.slice(0, 3), 10),
 		};
 	}
 
-	static getParts(str) {
-		let dateMatch = str.match(this.FULL_DATE_REGEX);
-		if(dateMatch) {
-			return this.getByDateTime(dateMatch);
-		}
-
-		let dateTimeMatch = str.match(this.DATETIME_REGEX);
-		if(dateTimeMatch) {
-			if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
+	static getParts(str = "") {
+		let dateTimeMatch = str.match(this.FULL_DATE_REGEX) ?? str.match(this.DATETIME_REGEX);
+		if(!dateTimeMatch) throw new Error(`Unsupported date format: ${str}`);
+		if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
 				throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
-			}
-
-			return this.getByDateTime(dateTimeMatch);
 		}
 
-		throw new Error(`Unsupported date format: ${str}`);
+		return this.getByDateTime(...dateTimeMatch);
 	}
 }
 

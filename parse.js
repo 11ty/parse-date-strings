@@ -2,66 +2,58 @@
  * _Times are parsed as UTC if no offset is specified_
  */
 export class IsoDateParts {
-	static DEFAULT_TIMEZONE_OFFSET = {
-		hours: 0,
-		minutes: 0,
-	};
-
 	static FULL_DATE_REGEX = /^([+-]\d{6}|\d{4})-?([01]\d)-?([0-3]\d)$/;
 	static DATETIME_REGEX = /^([+-]\d{6}|\d{4})-?([01]\d)-?([0-3]\d)[Tt ]([0-2]\d(?:[\.\,]\d+)?)(?::?([0-5]\d(?:[\.\,]\d+)?)(?::?([0-5]\d))?(?:[\.\,](\d{1,9}))?)?(Z|[+-][0-2]\d(?::?[0-5]\d)?)?$/;
 	static TIMEZONE_REGEX = /^([+-]\d{2})(?::?(\d{2}))?$/;
 	static IS_FRACTIONAL_REGEX = /^\d+[\.\,]\d+$/;
 
-	static getTimezoneOffset(offset = "") {
-		if(offset === "Z") {
-			return this.DEFAULT_TIMEZONE_OFFSET;
-		}
-		let match = offset.match(this.TIMEZONE_REGEX);
-		if(!match) {
-			return this.DEFAULT_TIMEZONE_OFFSET;
-		}
+	static getTimezoneOffset(offset = "Z") {
+		let [, hours = "0", minutes = "0"] = offset.match(this.TIMEZONE_REGEX) ?? [];
 
-		let [hours, minutes] = [match[1], match[2]];
-		let sign = hours[0] === '-' ? -1 : 1;
+    let sign = hours[0] === '-' ? -1 : 1;
 		return {
-			hours: parseInt(hours, 10) || 0,
-			minutes: (parseInt(minutes, 10) || 0) * sign
+			hours: parseInt(hours, 10),
+			minutes: parseInt(minutes, 10) * sign
 		};
 	}
 
 	/** @param {RegExpMatchArray} match */
-	static getByDateTime(match) {
-		let offset = this.getTimezoneOffset(match[8]);
+	static getByDateTime(
+		_, // full match
+		year = "",
+		month = "0", // 0-indexed default
+		day = "1", // 1-indexed default
+		hours = "0",
+		minutes = "0",
+		seconds = "0",
+		milliseconds = "0",
+		timezone = "Z",
+	) {
+		let offset = this.getTimezoneOffset(timezone);
 
 		return {
-			year: parseInt(match[1], 10),
-			month: match[2] ? parseInt(match[2], 10) - 1 : 0,
-			day: match[3] ? parseInt(match[3], 10) : 1, // 1-indexed default
-			hours: (match[4] ? parseInt(match[4], 10) : 0) - offset.hours,
-			minutes: (match[5] ? parseInt(match[5], 10) : 0) - offset.minutes,
-			seconds: match[6] ? parseInt(match[6], 10) : 0,
+			year: parseInt(year, 10),
+			month: parseInt(month, 10) - 1,
+			day: parseInt(day, 10),
+			hours: parseInt(hours, 10) - offset.hours,
+			minutes: parseInt(minutes, 10) - offset.minutes,
+			seconds: parseInt(seconds, 10),
 			// may include extra precision but we only count the first 3 digits for milliseconds
-			milliseconds: match[7] ? parseInt(match[7].slice(0, 3), 10) : 0,
+			milliseconds: parseInt(milliseconds.slice(0, 3), 10),
 		};
 	}
 
-	/** @param {string} str An [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible string */
-	static getParts(str) {
-		let dateMatch = str.match(this.FULL_DATE_REGEX);
-		if(dateMatch) {
-			return this.getByDateTime(dateMatch);
+  /** @param {string} str An [RFC 9557](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal/PlainDateTime#rfc_9557_format)-compatible string */
+	static getParts(str = "") {
+		let dateTimeMatch = str.match(this.FULL_DATE_REGEX) ?? str.match(this.DATETIME_REGEX);
+		if(!dateTimeMatch) {
+		  throw new Error(`Unsupported date format: ${str}`);
+		}
+		if(dateTimeMatch.slice(4,6).some(part => !!part?.match(this.IS_FRACTIONAL_REGEX))) {
+			throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
 		}
 
-		let dateTimeMatch = str.match(this.DATETIME_REGEX);
-		if(dateTimeMatch) {
-			if(dateTimeMatch[4]?.match(this.IS_FRACTIONAL_REGEX) || dateTimeMatch[5]?.match(this.IS_FRACTIONAL_REGEX)) {
-				throw new Error(`Unsupported date format (fractional hours or minutes): ${str}`);
-			}
-
-			return this.getByDateTime(dateTimeMatch);
-		}
-
-		throw new Error(`Unsupported date format: ${str}`);
+		return this.getByDateTime(...dateTimeMatch);
 	}
 }
 

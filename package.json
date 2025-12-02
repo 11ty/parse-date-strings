@@ -19,9 +19,9 @@
 	},
 	"license": "MIT",
 	"devDependencies": {
-		"luxon": "^3.7.1",
+		"luxon": "^3.7.2",
 		"temporal-polyfill": "^0.3.0",
-		"vitest": "^3.2.4"
+		"vitest": "^4.0.15"
 	},
 	"author": "Zach Leatherman <zachleatherman@gmail.com> (https://zachleat.com/)",
 	"repository": {
